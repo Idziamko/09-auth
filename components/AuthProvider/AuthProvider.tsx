@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { checkSession } from '@/lib/api/clientApi';
+import { checkSession, getMe } from '@/lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -15,8 +15,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const verifySession = async () => {
       setLoading(true);
       try {
-        const user = await checkSession();
-        if (user) {
+        const session = await checkSession();
+        if (session && session.success) {
+          const user = await getMe();
           setUser(user);
         } else {
           clearIsAuthenticated();

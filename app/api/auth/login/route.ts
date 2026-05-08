@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
-      return NextResponse.json(error.response?.data || { message: error.message }, { status: error.response?.status || 500 });
+      return NextResponse.json(
+        { error: error.message, response: error.response?.data },
+        { status: error.status }
+      );
     }
     logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

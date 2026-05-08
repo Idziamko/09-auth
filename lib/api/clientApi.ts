@@ -20,8 +20,21 @@ export interface CreateNoteBody {
   tag: NoteTag;
 }
 
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}
+
 export interface AuthResponse {
   user: User;
+}
+
+export interface SessionResponse {
+  success: boolean;
+}
+
+export interface UpdateUserBody {
+  username: string;
 }
 
 export async function fetchNotes(params: FetchNotesParams = {}): Promise<FetchNotesResponse> {
@@ -44,12 +57,12 @@ export async function fetchNoteById(id: string): Promise<Note> {
   return data;
 }
 
-export async function register(body: any): Promise<AuthResponse> {
+export async function register(body: AuthCredentials): Promise<AuthResponse> {
   const { data } = await api.post<AuthResponse>('/auth/register', body);
   return data;
 }
 
-export async function login(body: any): Promise<AuthResponse> {
+export async function login(body: AuthCredentials): Promise<AuthResponse> {
   const { data } = await api.post<AuthResponse>('/auth/login', body);
   return data;
 }
@@ -58,14 +71,10 @@ export async function logout(): Promise<void> {
   await api.post('/auth/logout');
 }
 
-export async function checkSession(): Promise<User | null> {
+export async function checkSession(): Promise<SessionResponse | null> {
   try {
-    const { data } = await api.get<{ success: boolean }>('/auth/session');
-    if (data.success) {
-      const user = await getMe();
-      return user;
-    }
-    return null;
+    const { data } = await api.get<SessionResponse>('/auth/session');
+    return data;
   } catch (error) {
     return null;
   }
@@ -76,7 +85,7 @@ export async function getMe(): Promise<User> {
   return data;
 }
 
-export async function updateMe(body: any): Promise<User> {
+export async function updateMe(body: UpdateUserBody): Promise<User> {
   const { data } = await api.patch<User>('/users/me', body);
   return data;
 }

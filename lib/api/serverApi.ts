@@ -1,53 +1,45 @@
+import axios from 'axios';
 import { cookies } from 'next/headers';
+import type { AxiosResponse } from 'axios';
 import type { Note } from '@/types/note';
 import type { User } from '@/types/user';
 import { FetchNotesParams, FetchNotesResponse } from './clientApi';
 
-const baseURL = 'https://notehub-api.goit.study';
+const serverApi = axios.create({
+  baseURL: 'https://notehub-api.goit.study',
+  withCredentials: true,
+});
 
-async function fetchWithCookies(endpoint: string, options: RequestInit = {}) {
+async function getAuthHeaders() {
   const cookieStore = await cookies();
   const allCookies = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
-
-  const headers = new Headers(options.headers);
-  headers.set('Cookie', allCookies);
-
-  const res = await fetch(`${baseURL}${endpoint}`, {
-    ...options,
-    headers,
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
-  }
-
-  return res.json();
+  return { Cookie: allCookies };
 }
 
 export async function fetchNotes(params: FetchNotesParams = {}): Promise<FetchNotesResponse> {
-  const searchParams = new URLSearchParams();
-  if (params.page) searchParams.set('page', params.page.toString());
-  if (params.perPage) searchParams.set('perPage', params.perPage.toString());
-  if (params.search) searchParams.set('search', params.search);
-  if (params.tag) searchParams.set('tag', params.tag);
-
-  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
-  return fetchWithCookies(`/notes${queryString}`);
+  const headers = await getAuthHeaders();
+  const { data } = await serverApi.get<FetchNotesResponse>('/notes', { params, headers });
+  return data;
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
-  return fetchWithCookies(`/notes/${id}`);
+  const headers = await getAuthHeaders();
+  const { data } = await serverApi.get<Note>(`/notes/${id}`, { headers });
+  return data;
 }
 
-export async function checkSession(): Promise<User | null> {
+export async function checkSession(): Promise<AxiosResponse | null> {
   try {
-    return await fetchWithCookies('/auth/session');
+    const headers = await getAuthHeaders();
+    const response = await serverApi.get('/auth/session', { headers });
+    return response;
   } catch (error) {
     return null;
   }
 }
 
 export async function getMe(): Promise<User> {
-  return fetchWithCookies('/users/me');
+  const headers = await getAuthHeaders();
+  const { data } = await serverApi.get<User>('/users/me', { headers });
+  return data;
 }
