@@ -1,0 +1,11 @@
+.item {
+  background-color: #3b3b3b;
+  border-radius: 12px;
+  padding: 18px 24px;
+  color: #ffffff;
+}
+
+.item p {
+  margin: 0;
+  font-size: 18px;
+}
