@@ -3,12 +3,7 @@ import type { Note } from '@/types/note';
 import type { User } from '@/types/user';
 import { FetchNotesParams, FetchNotesResponse } from './clientApi';
 
-const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return 'http://localhost:3000';
-};
-const baseURL = getBaseUrl() + '/api';
+const baseURL = 'https://notehub-api.goit.study';
 
 async function fetchWithCookies(endpoint: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
