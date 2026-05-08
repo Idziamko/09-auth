@@ -1,14 +1,9 @@
-import axios from 'axios';
+import { api } from '@/app/api/api';
 import { cookies } from 'next/headers';
 import type { AxiosResponse } from 'axios';
 import type { Note } from '@/types/note';
 import type { User } from '@/types/user';
 import { FetchNotesParams, FetchNotesResponse } from './clientApi';
-
-const serverApi = axios.create({
-  baseURL: 'https://notehub-api.goit.study',
-  withCredentials: true,
-});
 
 async function getAuthHeaders() {
   const cookieStore = await cookies();
@@ -18,20 +13,20 @@ async function getAuthHeaders() {
 
 export async function fetchNotes(params: FetchNotesParams = {}): Promise<FetchNotesResponse> {
   const headers = await getAuthHeaders();
-  const { data } = await serverApi.get<FetchNotesResponse>('/notes', { params, headers });
+  const { data } = await api.get<FetchNotesResponse>('/notes', { params, headers });
   return data;
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
   const headers = await getAuthHeaders();
-  const { data } = await serverApi.get<Note>(`/notes/${id}`, { headers });
+  const { data } = await api.get<Note>(`/notes/${id}`, { headers });
   return data;
 }
 
 export async function checkSession(): Promise<AxiosResponse | null> {
   try {
     const headers = await getAuthHeaders();
-    const response = await serverApi.get('/auth/session', { headers });
+    const response = await api.get('/auth/session', { headers });
     return response;
   } catch (error) {
     return null;
@@ -40,6 +35,6 @@ export async function checkSession(): Promise<AxiosResponse | null> {
 
 export async function getMe(): Promise<User> {
   const headers = await getAuthHeaders();
-  const { data } = await serverApi.get<User>('/users/me', { headers });
+  const { data } = await api.get<User>('/users/me', { headers });
   return data;
 }

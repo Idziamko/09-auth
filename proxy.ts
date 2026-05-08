@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
+import { parse } from 'cookie';
 import { checkSession } from '@/lib/api/serverApi';
 
 const privateRoutes = ['/profile', '/notes'];
@@ -22,6 +23,33 @@ export default async function proxy(request: NextRequest) {
     const sessionResult = await checkSession();
     if (sessionResult) {
       hasValidSession = true;
+
+      const setCookie = sessionResult.headers['set-cookie'];
+      if (setCookie) {
+        const response = NextResponse.next();
+        const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+        for (const cookieStr of cookieArray) {
+          const parsed = parse(cookieStr);
+
+          const options: {
+            expires?: Date;
+            path?: string;
+            maxAge?: number;
+          } = {
+            expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
+            path: parsed.Path,
+            maxAge: Number(parsed['Max-Age']),
+          };
+
+          if (parsed.accessToken) {
+            cookieStore.set('accessToken', parsed.accessToken, options);
+          }
+          if (parsed.refreshToken) {
+            cookieStore.set('refreshToken', parsed.refreshToken, options);
+          }
+        }
+        return response;
+      }
     }
   }
 
