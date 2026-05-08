@@ -42,10 +42,10 @@ export default async function proxy(request: NextRequest) {
           };
 
           if (parsed.accessToken) {
-            cookieStore.set('accessToken', parsed.accessToken, options);
+            response.cookies.set('accessToken', parsed.accessToken, options);
           }
           if (parsed.refreshToken) {
-            cookieStore.set('refreshToken', parsed.refreshToken, options);
+            response.cookies.set('refreshToken', parsed.refreshToken, options);
           }
         }
         return response;
