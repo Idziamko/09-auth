@@ -1,52 +1,38 @@
 # NoteHub
 
-This is my solution for the "08-zustand" homework. NoteHub is a simple application for managing
-personal notes, built with Next.js (App Router).
+This is my solution for the "09-auth" homework. This project adds full authentication to the NoteHub application using Next.js App Router.
 
 ## Features
 
-- View all notes, filter by tag (Todo, Work, Personal, Meeting, Shopping)
-- View note details on a separate page
-- Create new notes with a dedicated form page
-- Draft functionality: the create note form automatically saves your progress as a draft in
-  `localStorage`. If you cancel and come back, your text is still there!
-- SEO optimized with metadata and Open Graph tags for all pages
-- Styled with CSS Modules
-- Global font configuration using `next/font/google` (Roboto)
+- User Registration and Login via custom backend API.
+- Secure routing: only authenticated users can access `/profile` and `/notes` routes.
+- Next.js Middleware protects private routes and redirects unauthenticated users to `/sign-in`.
+- Global session state managed by Zustand.
+- JWT tokens (accessToken, refreshToken) stored securely in cookies by the Next.js API routes.
+- Profile view and edit pages.
+- Log out functionality that clears session and cookies.
 
-## Technologies Used
+## Technologies
 
-- **Next.js 14+** (App Router)
-- **React 19**
-- **TypeScript** for static typing
-- **Zustand** + `persist` middleware for draft state management
-- **TanStack Query** (React Query) for fetching and caching API data
-- **Axios** for HTTP requests
-- **CSS Modules** for component-scoped styling
+- **Next.js** (App Router)
+- **React**
+- **Zustand**
+- **Axios**
+- **CSS Modules**
 
-## Setup & Running Locally
+## Setup
 
 1. Clone the repository
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Create a `.env` file in the root folder and add your API token:
+3. Set the environment variable in `.env` (it will use localhost by default if not set, or your Vercel URL in production):
    ```env
-   NEXT_PUBLIC_NOTEHUB_TOKEN=your_token_here
+   NEXT_PUBLIC_API_URL=http://localhost:3000
    ```
 4. Run the development server:
    ```bash
    npm run dev
    ```
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Project Structure
-
-- `/app` - Next.js App Router pages and layouts
-- `/components` - Reusable UI components (not tied directly to routes)
-- `/lib/api.ts` - Axios setup and API requests
-- `/lib/store/noteStore.ts` - Zustand store for draft functionality
-- `/types` - TypeScript interfaces
-
-Code is formatted with Prettier.
